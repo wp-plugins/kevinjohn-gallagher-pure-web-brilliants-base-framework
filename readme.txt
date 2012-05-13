@@ -5,22 +5,10 @@ Tags: 							kevinjohn gallagher, pure web brilliant, framework, cms, simple, mu
 Requires at least:	3.0
 Tested up to: 			3.2
 Stable tag: 				2.0
-Package:						CleanerCaption
-Version:						2.0.1
-Author:							Kevinjohn Gallagher <wp@KevinjohnGallagher.com>
-Copyright:					Copyright (c) 2012, Kevinjohn Gallagher
-Link:								http://KevinjohnGallagher.com
-Licence:						http://www.gnu.org/licenses/gpl-3.0.txt
 
 
 
 Framework required for all Pure Web Brilliant plug-ins, themes and CMS features.
-
-== Description ==
-
-This is the long description.  No limit, and you can use Markdown (as well as in the following sections).
-
-
 
 
 
@@ -69,10 +57,18 @@ Yes! We'd love that. This framework was built in response to our belief that in 
 
 == Arbitrary section ==
 
+
 **Kevinjohn Gallagher:** [Kevinjohn Gallagher](http://kevinjohngallagher.com/ "Kevinjohn Gallagher .com")
 
 **Agency:** [Pure Web Brilliant](http://purewebbrilliant.com/ "Pure Web Brilliant")
 
-Framework release blog post: [Kevinjohn Gallagher: Pure Web Brilliant’s plugin framework released](http://kevinjohngallagher.com/2012/05/pure-web-brilliants-plugin-framework-released/ "Pure Web Brilliant’s plugin framework released")
+Framework release blog post: [Pure Web Brilliant’s plugin framework released](http://kevinjohngallagher.com/2012/05/pure-web-brilliants-plugin-framework-released/ "Pure Web Brilliant’s plugin framework released")
 
 > " I want to go on record thanking my colleagues and many of our current & past clients, who were (mostly) happy to negotiate changes in the licence of our past work so that we could make it open source. "
+
+Package:						Pure Web Brilliant
+Version:						2.0.1
+Author:							Kevinjohn Gallagher <framework@KevinjohnGallagher.com>
+Copyright:					Copyright (c) 2012, Kevinjohn Gallagher
+Link:								http://KevinjohnGallagher.com
+Licence:						http://www.gnu.org/licenses/gpl-3.0.txt
