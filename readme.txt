@@ -1,9 +1,9 @@
-=== Kevinjohn Gallagher: Pure Web Brilliant's base framework ===
+=== Pure Web Brilliant's base framework ===
 Contributors: 			kevinjohngallagher, purewebbrilliant, pure-web-brilliant 
 Donate link:				http://kevinjohngallagher.com/
 Tags: 							kevinjohn gallagher, pure web brilliant, framework, cms, simple, multisite, settings, dependancies, testing
 Requires at least:	3.0
-Tested up to: 			3.2
+Tested up to: 			3.4
 Stable tag: 				2.0
 
 
@@ -44,7 +44,7 @@ Yes! We'd love that. This framework was built in response to our belief that in 
 == Changelog ==
 
 = 2.0 =
-* Removal of non-GPLv2 compatible functions.
+* Removal of non-GPLv3 compatible functions.
 * Publish to WP.org repository.
 
 
@@ -66,9 +66,9 @@ Framework release blog post: [Pure Web Brilliant’s plugin framework released](
 
 > " I want to go on record thanking my colleagues and many of our current & past clients, who were (mostly) happy to negotiate changes in the licence of our past work so that we could make it open source. "
 
-Package:						Pure Web Brilliant
-Version:						2.0.1
-Author:							Kevinjohn Gallagher <framework@KevinjohnGallagher.com>
-Copyright:					Copyright (c) 2012, Kevinjohn Gallagher
-Link:								http://KevinjohnGallagher.com
-Licence:						http://www.gnu.org/licenses/gpl-3.0.txt
+* Package:						Pure Web Brilliant
+* Version:						2.0.1
+* Author:							Kevinjohn Gallagher <framework@KevinjohnGallagher.com>
+* Copyright:					Copyright (c) 2012, Kevinjohn Gallagher
+* Link:								http://KevinjohnGallagher.com
+* Licence:						http://www.gnu.org/licenses/gpl-3.0.txt
