@@ -2,7 +2,7 @@
 /*
 	Plugin Name: 			Kevinjohn Gallagher:  _PWB Base Framework
 	Description: 			Framework required for all Pure Web Brilliant plug-ins, themes and CMS features.
-	Version: 				2.0
+	Version: 				2.1
 	Author: 				Kevinjohn Gallagher
 	Author URI: 			http://kevinjohngallagher.com/
 	
