@@ -4,7 +4,7 @@ Donate link:				http://kevinjohngallagher.com/
 Tags: 							kevinjohn gallagher, pure web brilliant, framework, cms, simple, multisite, settings, dependancies, testing
 Requires at least:	3.0
 Tested up to: 			3.4
-Stable tag: 				2.0
+Stable tag: 				2.1
 
 
 

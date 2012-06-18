@@ -10,8 +10,8 @@
 	Donate link:			http://kevinjohngallagher.com/
 	Tags: 					kevinjohn gallagher, pure web brilliant, framework, cms, simple, multisite
 	Requires at least:		3.0
-	Tested up to: 			3.2
-	Stable tag: 			2.0
+	Tested up to: 			3.4
+	Stable tag: 			2.1
 */
 /**
  *
@@ -38,7 +38,7 @@
  *
  *
  *	@package				Pure Web Brilliant
- *	@version 				2.0.1
+ *	@version 				2.1
  *	@author 				Kevinjohn Gallagher <wordpress@kevinjohngallagher.com>
  *	@copyright 				Copyright (c) 2012, Kevinjohn Gallagher
  *	@link 					http://kevinjohngallagher.com
@@ -56,29 +56,78 @@
 	class kevinjohn_gallagher 
 	{
 	
-			const PM	=	'_kevinjohn_gallagher_framework';
-			var				$instance;
-			var				$plugin_dir;
-			var				$plugin_url;			
+			/*
+			**
+			**		VARIABLES
+			**
+			*/
+	
+			const PM		=	'_kevinjohn_gallagher_framework';
+			
+			var					$instance;
+			var					$uniqueID;
+			var 				$plugin_name;										
+			var					$plugin_dir;
+			var					$plugin_url;			
+			var 				$plugin_options;
+			var 				$child_settings_array;
+			var 				$http_or_https;
 
-
+			var 				$post_custom_fields;
+			
+			
+			
+			
 		
 			public	function	__construct() 
 			{
-					$this->instance 		=& $this;
-					$this->uniqueID 		= self::PM;
-					add_action( 'init', array( $this, 'init' ) );
-					add_action( 'admin_menu', array( $this, 'framework_admin_menu_setup' ) );
+					$this->instance 				=	&$this;
+					$this->uniqueID 				=	self::PM;
+					$this->plugin_name				=	"Kevinjohn Gallagher: Pure Web Brilliant's Framework";
 					
+					add_action( 'init', 				array( 	&$this, 'init' ) );
+					add_action( 'admin_init',			array( 	&$this, 'framework_admin_setup' ) );
+					add_action( 'admin_menu', 			array(	&$this,	'framework_admin_menu_setup' ) );
+										
 			}
 
 
 			public function init() 
 			{
-					$this->plugin_dir		=	plugin_dir_path(__FILE__);	
-					$this->plugin_url		=	plugin_dir_url(__FILE__);				
+					$this->plugin_dir				=	plugin_dir_path(__FILE__);	
+					$this->plugin_url				=	plugin_dir_url(__FILE__);
+					$this->http_or_https			=	is_ssl() ? 'https:' : 'http:';
+					
+					$this->plugin_options			=	get_option($this->uniqueID . '___options');
+					
+					add_filter( 'wp',					array(	&$this,	'get_post_custom_fields' ), 100 );				
+					add_action(	'wp_head',				array(	&$this,	'framework_print_plugin_name'));
+					
 			}
 			
+			
+			public 	function framework_admin_setup()
+			{
+						global $pagenow;
+						
+						if ( 'admin.php' == $pagenow ) 
+						{		
+								if( $this->is_page_mine() )
+								{
+										wp_enqueue_script(	'media-upload'	); 		
+										wp_enqueue_script(	'thickbox'	);
+										wp_enqueue_style(	'thickbox'	);
+										
+														
+										wp_enqueue_style(	'pwb_framework', 
+															plugins_url('_stylesheets/kevinjohn_gallagher_____framework.css', __FILE__),
+															array(), 
+															'1.0', 
+															'all'
+														);
+								}
+						}
+			}
 			
 
 			/**
@@ -133,13 +182,33 @@
 			 */
 			public 	function 	framework_admin_menu_child($page_title, $menu_title, $menu_slug, $function)
 			{
+			
+					if( $this->plugin_page_title )
+					{
+							$page_title					=	$this->plugin_page_title;
+					}
+
+					if( $this->plugin_menu_title )
+					{
+							$menu_title					=	$this->plugin_menu_title;
+					}
+
+
+					if( $this->plugin_slug )
+					{
+							$menu_slug					=	$this->plugin_slug;
+					}
+			
+			
 					add_submenu_page(	'kevinjohn-gallagher-framework', 
 										$page_title .' :: Kevinjohn Gallagher Framework', 
 										$menu_title, 
 										'edit_pages', 
-										$menu_slug, 
+										'kjg-pwb-'. $menu_slug, 
 										$function
 									);
+									
+
 			}
 
 			
@@ -163,7 +232,45 @@
 			 */			
 			public 	function 	admin_init_register_settings()
 			{
-					$this->child_register_settings();
+				//	Truly hate this, but then I never pretended to be a good developer
+				//
+				//	Lets test if this is our page
+				//	Seems hacky...
+				//				
+
+					global	$pagenow;
+					
+					
+					if( 'options.php' == $pagenow )
+					{
+					
+							if( isset( $_SERVER['HTTP_REFERER'] ) )
+							{
+									$test_string_on_this	=	$_SERVER['HTTP_REFERER'];
+									
+							}	
+							elseif( isset( $_REQUEST['_wp_http_referer'] ) ) 
+							{
+								
+									$test_string_on_this	=	$_REQUEST['_wp_http_referer'];
+							}
+						
+					} else {
+						
+							$test_string_on_this 		= 		$_SERVER['QUERY_STRING'];
+					}
+					
+					
+
+					if( isset( $test_string_on_this )  && isset( $this->plugin_slug ) )
+					{
+							if( strpos( $test_string_on_this , $this->plugin_slug ) !== false )
+							{
+									$this->child_register_settings();	
+							}
+					}						
+				
+			
 			}
 
 			
@@ -174,7 +281,8 @@
 			 *		 
 			 */			
 			public 	function 	child_register_settings()
-			{			
+			{		
+				
 					register_setting(	'kevinjohn_gallagher_options', 
 										$this->uniqueID . '___options', 
 										array( $this, 'framework_validate_options') 
@@ -187,13 +295,41 @@
 					}	
 					
 					
-					foreach ( $this->child_settings_array as $id => $setting ) {
-						$setting['id'] = $id;
-						$this->framework_create_setting( $setting );
+					foreach ( $this->child_settings_array as $id => $setting ) 
+					{
+							$setting['id'] 		= 	$id;
+							$this->framework_create_setting( $setting );
 					}
 			}			
 			
 			
+
+			/**
+			 *		Outputs settings page
+			 *
+			 *		I know this seems weird, the fact that this doesn't do anything
+			 *		but the function needs a valid callback, and I don't need to process that right now 
+			 *		 
+			 */			
+			public 	function 	framework_display_section($args)
+			{
+			
+			}
+
+			
+			/**
+			 *		Valid Callback
+			 *
+			 *		I know this seems weird, the fact that this doesn't do anything
+			 *		but the function needs a valid callback, and I don't need to process that right now 
+			 *		 
+			 */			
+			public 	function 	framework_valid_callback($args)
+			{
+			
+			}
+			
+					
 		
 		
 			/**
@@ -218,7 +354,7 @@
 			 */			
 			public 	function 	framework_admin_page_header($title, $icon_class)
 			{
-					echo	"<div 	class='wrap'>";
+					echo	"<div 	id='kjg-pwb-framework-page' class='wrap'>";
 					echo	"<h2 	class='". $icon_class ."'> ". $title ." </h2>";
 					echo	"<div 	class='metabox-holder'>";	
 					echo	"<form method='post' action='options.php'>";
@@ -274,8 +410,30 @@
 			public 	function 	framework_display_setting( $args = array() )
 			{
 					$options = get_option( $this->uniqueID. '___options' );
+					
+					//
+					//	This is how we'll handle extenstions while in beta.
+					//
+					if( $args['type'] == 'wp_image_upload' )
+					{
 
-					call_user_func( array($this, 'framework_display_setting_type_'. $args['type']) , $args, $options);
+							if( class_exists('kevinjohn_gallagher___image_controls') )
+							{
+								
+									kevinjohn_gallagher___image_controls::framework_display_setting_type_wp_image_upload($args, $options);
+								
+							} else {
+								
+									$args['description'] = "Sorry, this requires the <strong> Image Control </strong> plug-in.  ";
+							}
+												
+						
+					} else {
+						
+							call_user_func( array($this, 'framework_display_setting_type_'. $args['type']) , $args, $options);				
+						
+					}
+
 
 					echo	"<span class='description'> ". $args['description'] ." </span>";
 					
@@ -319,6 +477,7 @@
 			{
 					extract($args);
 
+//					echo 	"<br />";
 					echo	'<input 
 									type="checkbox"					
 									class="checkbox ' . $field_class . '" 
@@ -326,7 +485,10 @@
 									id="' . $id . '" 
 									value="1" 
 									'. checked( $options[$id], 1, false ) .'
+									style="margin-top:8px"
 								/>';
+					echo 	"<br />";
+					echo 	"<br />";
 					
 			}
 						
@@ -493,7 +655,42 @@
 					echo	'</textarea>';
 					
 			}
+
+
 			
+
+
+		
+		
+
+		
+		
+			/**
+			 *		Outputs only description text for a WP settings page
+			 *		 
+			 * 		@args  		array
+			 * 		@options	array
+			 */
+			public function 	framework_display_setting_type_text_only($args, $options)
+			{
+					/*
+					extract($args);
+
+					echo	'<textarea 				
+									class="regular-text ' . $field_class . '" 
+									name="'. $this->uniqueID . '___options[' . $id . ']"
+									id="' . $id . '" 
+									placeholder="' . $std . '" 
+									rows="6" 
+									cols="30"
+								>';
+								
+					echo	wp_htmledit_pre( $options[$id] );
+								
+					echo	'</textarea>';
+					*/
+					
+			}			
 			
 			
 			
@@ -529,7 +726,117 @@
 
 
 
+			/**
+			 *		Sets the custom variables / meta data for this $post
+			 *		 
+			 */			
+			public 	function 	get_post_custom_fields()
+			{
+			
+					if ( empty($post) ) 
+					{
+							global $post;
+							
+							if ( !isset($post) )
+							{
+								return 	false;
+							}
+					}			
+			
+					$this->post_custom_fields 		= 	get_post_custom($post->ID);
+					
+					return	true;
+			}
 
+
+
+
+			/**
+			 *		Gets a custom field variable
+			 *		 
+			 * 		@post_id  		$post->ID
+			 * 		@meta_key  		meta key to save under
+			 * 		@meta_value  	meta value to save
+			 * 		
+			 */						
+
+			public 	function 	framework_get_value( $post_id = '', $meta_key ) 
+			{
+					if ( empty($post_id) ) 
+					{
+							global $post;
+							
+							if ( isset($post) )
+							{
+									$post_id 	= $post->ID;
+							} else { 
+							
+									return		false;
+							}
+					}
+					
+					if( empty( $this->post_custom_fields ) )
+					{
+							$this->get_post_custom_fields();						
+					}
+
+
+					if ( !empty($this->post_custom_fields[$meta_key][0]) )
+					{
+							return	maybe_unserialize( $this->post_custom_fields[$meta_key][0] );
+					
+					} else {
+					
+							return	false;
+					}
+			}
+			
+			
+			
+			
+			/**
+			 *		Sets a custom field variable
+			 *		 
+			 * 		@post_id  		$post->ID
+			 * 		@meta_key  		meta key to save under
+			 * 		@meta_value  	meta value to save
+			 * 		
+			 */						
+			public 	function 	framework_set_value( $post_id='', $meta_key, $meta_value  ) 
+			{
+					
+					if ( empty($post_id) ) 
+					{
+							global $post;
+							
+							if ( isset($post) )
+							{
+								$post_id = $post->ID;
+							} else { 
+								return false;
+							}
+					}
+					
+					update_post_meta( $post_id, '_'. $this->plugin_name .'_'. $meta_key, $meta_value );
+			}
+			
+			
+
+			/**
+			 *		Outputs the plugin name.
+			 *		Commented out to not appear on the front end
+			 *		No link back to owner, merely for information.
+			 *		 
+			 */						
+			public 	function 	framework_print_plugin_name() 
+			{
+					
+					echo	"\n";
+				//	echo	"\n\n";
+					echo	"<!--	" . $this->plugin_name . " 	-->";
+				//	echo	"<!--	". __FILE__ ."	-->";					
+				//	echo	"\n\n";
+			}
 
 			
 			/**
@@ -554,7 +861,33 @@
 					return	$string_to_return; 
 			}
 			
-			
+
+
+			/**
+			 *		So we don't load our scripts on other plugin pages.
+			 *		 
+			 * 		@string  	test for a specific slug 
+			 * 		@return		boolean
+			 */				
+
+			public 	function 	is_page_mine($this_is_me='')
+			{
+					if( strpos( $_SERVER['QUERY_STRING'] , "kjg" ) !== false || strpos( $_SERVER['QUERY_STRING'] , "pwb" ) !== false )
+					{
+							$is_it_mine	=	true;
+							
+					}	elseif( !empty( $this_is_me ) ) {
+					
+							if( strpos( $_SERVER['QUERY_STRING'] , $this_is_me ) !== false )
+							{
+									$is_it_mine	=	true;					
+							}
+					}
+					
+					return 	$is_it_mine;
+			}
+
+
 	
 
 			/**
@@ -565,7 +898,8 @@
 			 */				
 			public	function	print_r_nicely($array)
 			{
-					echo "<pre style='	border:				1px solid grey; 
+					echo "<pre 	class='print_r_nicely'
+								style='	border:				1px solid grey; 
 										padding:			5px; 
 										margin:				20px 20px; 
 										background-color:	white; 
@@ -581,6 +915,8 @@
 					echo "</pre>";
 			}
 		
+
+
 		
 			/**
 			 *		A simple loader test function
@@ -591,7 +927,48 @@
 		    {
 			    	return		"The Eagle has landed";
 		    }
+		    
+		    
+			/**
+			 *		A simple loader test function
+			 *		 
+			 * 		@return		string
+			 */					    
+		    
+			public 	function 	is_this_plugin_loaded()
+			{
+				return	true;
+				
+			}
+
+		    
 	}
 
 
 	$kevinjohn_gallagher	=	new 	kevinjohn_gallagher();
+
+
+
+
+			/**
+			 *		the_content				=		get_the_content	
+			 *		the_post 				= 		get_the_post
+			 *		the_title 				= 		get_the_title
+			 *		the_category			=		get_the_category
+			 *		the_excerpt				=		get_the_excerpt
+			 *		the_post_thumbnail		=		get_the_post_thumbnail
+			 *		the_permalink			=		get_permalink	??
+			 *
+			 *		Where is the "_the" ? Come now...
+			 * 		 
+			 * 		@return		boolean
+			 */	
+			
+			if( !function_exists('get_the_permalink') )
+			{
+					function 	get_the_permalink()
+					{
+					
+							return get_permalink();
+					}
+			}
