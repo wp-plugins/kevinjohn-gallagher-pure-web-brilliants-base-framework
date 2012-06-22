@@ -2,7 +2,7 @@
 /*
 	Plugin Name: 			Kevinjohn Gallagher:  _PWB Base Framework
 	Description: 			Framework required for all Pure Web Brilliant plug-ins, themes and CMS features.
-	Version: 				2.1
+	Version: 				2.2
 	Author: 				Kevinjohn Gallagher
 	Author URI: 			http://kevinjohngallagher.com/
 	
@@ -11,7 +11,7 @@
 	Tags: 					kevinjohn gallagher, pure web brilliant, framework, cms, simple, multisite
 	Requires at least:		3.0
 	Tested up to: 			3.4
-	Stable tag: 			2.1
+	Stable tag: 			2.2
 */
 /**
  *
@@ -38,7 +38,7 @@
  *
  *
  *	@package				Pure Web Brilliant
- *	@version 				2.1
+ *	@version 				2.2
  *	@author 				Kevinjohn Gallagher <wordpress@kevinjohngallagher.com>
  *	@copyright 				Copyright (c) 2012, Kevinjohn Gallagher
  *	@link 					http://kevinjohngallagher.com
@@ -49,7 +49,7 @@
 
 
 
-	define( '_KEVINJOHN_GALLAGHER_FRAMEWORK', '2.0' );
+	define( '_KEVINJOHN_GALLAGHER_FRAMEWORK', '2.2' );
 	
 
 	
@@ -83,27 +83,67 @@
 			{
 					$this->instance 				=	&$this;
 					$this->uniqueID 				=	self::PM;
+					$this->plugin_dir				=	plugin_dir_path(__FILE__);	
+					$this->plugin_url				=	plugin_dir_url(__FILE__);
+					
 					$this->plugin_name				=	"Kevinjohn Gallagher: Pure Web Brilliant's Framework";
 					
-					add_action( 'init', 				array( 	&$this, 'init' ) );
-					add_action( 'admin_init',			array( 	&$this, 'framework_admin_setup' ) );
-					add_action( 'admin_menu', 			array(	&$this,	'framework_admin_menu_setup' ) );
+					
+					add_action( 'init', 				array( 	&$this, 	'init' ) );
+					add_action( 'admin_init',			array( 	&$this, 	'framework_admin_setup' ) );
+					add_action(	'admin_init',			array( 	&$this, 	'admin_init_register_settings'), 100);
+					add_action( 'admin_menu', 			array(	&$this, 	'framework_admin_menu_setup' ) );
+
+					/*					
+					add_action( 'admin_init',			array(	&$this,	'framework_admin_define_child_settings_sections' ) );
+					add_action( 'admin_init',			array(	&$this,	'framework_admin_define_child_settings_array' ) );	
+					*/				
 										
 			}
 
 
 			public function init() 
 			{
-					$this->plugin_dir				=	plugin_dir_path(__FILE__);	
-					$this->plugin_url				=	plugin_dir_url(__FILE__);
-					$this->http_or_https			=	is_ssl() ? 'https:' : 'http:';
 					
+					$this->http_or_https			=	is_ssl() ? 'https:' : 'http:';
 					$this->plugin_options			=	get_option($this->uniqueID . '___options');
 					
 					add_filter( 'wp',					array(	&$this,	'get_post_custom_fields' ), 100 );				
 					add_action(	'wp_head',				array(	&$this,	'framework_print_plugin_name'));
 					
+					add_action(	'admin_init',			array( 	&$this, 'framework_on_action_admin_init'),	99);
+
+
+					
+					if( method_exists( $this, 'define_child_settings_sections') )
+					{
+							add_action(	'admin_init',		array( $this, 'define_child_settings_sections'),	1);
+					}
+					
+
+					if( method_exists( $this, 'define_child_settings_array') )
+					{
+							add_action(	'admin_init',		array( $this, 'define_child_settings_array'),		2);							
+					}					
+					
+
+					if( method_exists( $this, 'add_plugin_to_menu') )
+					{
+							add_action( 'admin_menu',		array( $this, 'add_plugin_to_menu'));
+					}	
+
+					
 			}
+
+
+			public 	function 	framework_on_action_admin_init()
+			{
+					$this->child_settings_sections 		=	apply_filters( 	'kjg_pwb_hook_child_settings_sections_'. $this->uniqueID,	 	$this->child_settings_sections);
+					$this->child_settings_array			= 	apply_filters( 	'kjg_pwb_hook_child_settings_array_'. $this->uniqueID, 			$this->child_settings_array);
+					
+			}
+
+
 			
 			
 			public 	function framework_admin_setup()
@@ -120,7 +160,10 @@
 										
 														
 										wp_enqueue_style(	'pwb_framework', 
-															plugins_url('_stylesheets/kevinjohn_gallagher_____framework.css', __FILE__),
+															plugins_url(
+																			'_stylesheets/kevinjohn_gallagher_____framework.css', 
+																			__FILE__
+																		),
 															array(), 
 															'1.0', 
 															'all'
@@ -128,6 +171,10 @@
 								}
 						}
 			}
+			
+			
+			
+
 			
 
 			/**
@@ -950,25 +997,25 @@
 
 
 
-			/**
-			 *		the_content				=		get_the_content	
-			 *		the_post 				= 		get_the_post
-			 *		the_title 				= 		get_the_title
-			 *		the_category			=		get_the_category
-			 *		the_excerpt				=		get_the_excerpt
-			 *		the_post_thumbnail		=		get_the_post_thumbnail
-			 *		the_permalink			=		get_permalink	??
-			 *
-			 *		Where is the "_the" ? Come now...
-			 * 		 
-			 * 		@return		boolean
-			 */	
-			
-			if( !function_exists('get_the_permalink') )
+	/**
+	 *		the_content				=		get_the_content	
+	 *		the_post 				= 		get_the_post
+	 *		the_title 				= 		get_the_title
+	 *		the_category			=		get_the_category
+	 *		the_excerpt				=		get_the_excerpt
+	 *		the_post_thumbnail		=		get_the_post_thumbnail
+	 *		the_permalink			=		get_permalink	??
+	 *
+	 *		Where is the "_the" ? Come now...
+	 * 		 
+	 * 		@return		boolean
+	 */	
+	
+	if( !function_exists('get_the_permalink') )
+	{
+			function 	get_the_permalink()
 			{
-					function 	get_the_permalink()
-					{
-					
-							return get_permalink();
-					}
+			
+					return get_permalink();
 			}
+	}

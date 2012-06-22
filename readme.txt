@@ -1,10 +1,10 @@
 === Pure Web Brilliant's base framework ===
-Contributors: 			kevinjohngallagher, purewebbrilliant, pure-web-brilliant 
+Contributors: 				kevinjohngallagher, purewebbrilliant, pure-web-brilliant 
 Donate link:				http://kevinjohngallagher.com/
-Tags: 							kevinjohn gallagher, pure web brilliant, framework, cms, simple, multisite, settings, dependancies, testing
-Requires at least:	3.0
-Tested up to: 			3.4
-Stable tag: 				2.1
+Tags: 						kevinjohn gallagher, pure web brilliant, framework, cms, simple, multisite, settings, dependancies, testing
+Requires at least:			3.0
+Tested up to: 				3.4
+Stable tag: 				2.2
 
 
 
@@ -42,6 +42,22 @@ Yes! We'd love that. This framework was built in response to our belief that in 
 
 
 == Changelog ==
+
+= 2.2 =
+
+Added stylesheet to wp_admin
+Added action: define_child_settings_sections
+Added action: define_child_settings_array
+Added action: add_plugin_to_menu
+Added function: framework_on_action_admin_init()
+Added function: framework_valid_callback ()
+Added function: get_post_custom_fields ()
+Added function: framework_get_value ()
+Added function: framework_set_value ()
+Added function: is_page_mine ()
+Added function: get_the_permalink ()
+
+
 
 = 2.0 =
 * Removal of non-GPLv3 compatible functions.
