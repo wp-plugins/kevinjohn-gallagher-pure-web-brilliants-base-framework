@@ -2,7 +2,7 @@
 /*
 	Plugin Name: 			Kevinjohn Gallagher:  _PWB Base Framework
 	Description: 			Framework required for all Pure Web Brilliant plug-ins, themes and CMS features.
-	Version: 				2.2
+	Version: 				2.3
 	Author: 				Kevinjohn Gallagher
 	Author URI: 			http://kevinjohngallagher.com/
 	
@@ -11,7 +11,7 @@
 	Tags: 					kevinjohn gallagher, pure web brilliant, framework, cms, simple, multisite
 	Requires at least:		3.0
 	Tested up to: 			3.4
-	Stable tag: 			2.2
+	Stable tag: 			2.3
 */
 /**
  *
@@ -38,7 +38,7 @@
  *
  *
  *	@package				Pure Web Brilliant
- *	@version 				2.2
+ *	@version 				2.3
  *	@author 				Kevinjohn Gallagher <wordpress@kevinjohngallagher.com>
  *	@copyright 				Copyright (c) 2012, Kevinjohn Gallagher
  *	@link 					http://kevinjohngallagher.com
@@ -47,9 +47,14 @@
  *
  */
 
+ 	if ( ! defined( 'ABSPATH' ) )
+ 	{ 
+ 			die( 'Direct access not permitted.' ); 
+ 	}
+ 	
 
 
-	define( '_KEVINJOHN_GALLAGHER_FRAMEWORK', '2.2' );
+	define( '_KEVINJOHN_GALLAGHER_FRAMEWORK', '2.3' );
 	
 
 	
@@ -90,7 +95,7 @@
 					
 					
 					add_action( 'init', 				array( 	&$this, 	'init' ) );
-					add_action( 'admin_init',			array( 	&$this, 	'framework_admin_setup' ) );
+			//		add_action( 'admin_init',			array( 	&$this, 	'framework_admin_setup' ) );
 					add_action(	'admin_init',			array( 	&$this, 	'admin_init_register_settings'), 100);
 					add_action( 'admin_menu', 			array(	&$this, 	'framework_admin_menu_setup' ) );
 
@@ -108,8 +113,13 @@
 					$this->http_or_https			=	is_ssl() ? 'https:' : 'http:';
 					$this->plugin_options			=	get_option($this->uniqueID . '___options');
 					
+					
+					add_action( 'admin_init',			array( 	&$this, 	'framework_admin_setup' ) );
+					
 					add_filter( 'wp',					array(	&$this,	'get_post_custom_fields' ), 100 );				
 					add_action(	'wp_head',				array(	&$this,	'framework_print_plugin_name'));
+					add_action(	'login_head',			array(	&$this,	'framework_print_plugin_name'));
+					add_action(	'admin_head',			array(	&$this,	'framework_print_plugin_name'));
 					
 					add_action(	'admin_init',			array( 	&$this, 'framework_on_action_admin_init'),	99);
 
@@ -134,6 +144,24 @@
 
 					
 			}
+			
+			
+			
+			public 	function 	framework_capability_test( $capability = 'manage_options' )
+			{
+					if( empty( $capability ) )
+					{
+							$capability 	= 	'manage_options';
+					}
+										
+					
+				
+					if ( ! current_user_can( $capability ) )
+					{
+							die( 'Sorry, but you are not allowed to load this page. ' );				
+					}
+				
+			}
 
 
 			public 	function 	framework_on_action_admin_init()
@@ -151,9 +179,13 @@
 						global $pagenow;
 						
 						if ( 'admin.php' == $pagenow ) 
-						{		
+						{
+								
 								if( $this->is_page_mine() )
 								{
+								
+										$this->framework_capability_test();
+								
 										wp_enqueue_script(	'media-upload'	); 		
 										wp_enqueue_script(	'thickbox'	);
 										wp_enqueue_style(	'thickbox'	);
@@ -919,7 +951,7 @@
 
 			public 	function 	is_page_mine($this_is_me='')
 			{
-					if( strpos( $_SERVER['QUERY_STRING'] , "kjg" ) !== false || strpos( $_SERVER['QUERY_STRING'] , "pwb" ) !== false )
+					if( strpos( $_SERVER['QUERY_STRING'] , "kjg" ) !== false || strpos( $_SERVER['QUERY_STRING'] , "pwb" ) !== false || strpos( $_SERVER['QUERY_STRING'] , "kevinjohn" ) !== false )
 					{
 							$is_it_mine	=	true;
 							
