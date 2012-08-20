@@ -2,7 +2,7 @@
 /*
 	Plugin Name: 			Kevinjohn Gallagher:  _PWB Base Framework
 	Description: 			Framework required for all Pure Web Brilliant plug-ins, themes and CMS features.
-	Version: 				2.3
+	Version: 				2.4
 	Author: 				Kevinjohn Gallagher
 	Author URI: 			http://kevinjohngallagher.com/
 	
@@ -10,8 +10,8 @@
 	Donate link:			http://kevinjohngallagher.com/
 	Tags: 					kevinjohn gallagher, pure web brilliant, framework, cms, simple, multisite
 	Requires at least:		3.0
-	Tested up to: 			3.4
-	Stable tag: 			2.3
+	Tested up to: 			3.5
+	Stable tag: 			2.4
 */
 /**
  *
@@ -38,7 +38,7 @@
  *
  *
  *	@package				Pure Web Brilliant
- *	@version 				2.3
+ *	@version 				2.4
  *	@author 				Kevinjohn Gallagher <wordpress@kevinjohngallagher.com>
  *	@copyright 				Copyright (c) 2012, Kevinjohn Gallagher
  *	@link 					http://kevinjohngallagher.com
@@ -54,7 +54,7 @@
  	
 
 
-	define( '_KEVINJOHN_GALLAGHER_FRAMEWORK', '2.3' );
+	define( '_KEVINJOHN_GALLAGHER_FRAMEWORK', '2.4' );
 	
 
 	
@@ -474,7 +474,18 @@
 			 */			
 			public 	function 	framework_validate_options($input)
 			{
+					do_action('kjg_framework_validate_options_action_pre');
+					
+					
+
+				
+					$input 	= 	apply_filters( 'kjg_framework_validate_options_filter', 	$input 	);
+					
+			
 					return $input;
+					
+					do_action('kjg_framework_validate_options_action_apres');
+					
 			}
 			
 
